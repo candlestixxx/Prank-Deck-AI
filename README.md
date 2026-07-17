@@ -1,6 +1,4 @@
 # Prank-Deck-AI
-Here is the complete project layout, structured precisely as a production-ready **GitHub Repository `README.md**` file. You can copy and paste this code block directly into a file named `README.md` at the root of your new project repository.
-
 ```markdown
 # PrankDeck Universal 🎛️🎙️🤖
 
@@ -155,3 +153,18 @@ This software configuration is released under the **MIT License**. The underlyin
 ```
 
 ```
+---
+
+## 🌲 A Note from the Creator (LK2026)
+
+> "I created this project during the second night of the Canadian wildfires in Detroit, Michigan on 7/17/2026. The smoke has been affecting the Metro Detroit area now for 3 days and 2 nights. It's a weary sort of vibe that has blanketed our piece of this earth—unlike any vibe I have ever experienced from mother nature, most likely because it's a totally new experience. 
+>
+> Gauging everything and everyone in my travels during these wildfires, I can feel a sort of leery uprising in energy, not only from nature, but from the people too. It's an amazing experience that we all will most likely end up regretting lol. 
+>
+> Based on the events of my life leading up to this repo, I find that humor is one of the essential ingredients needed for survival. It's a part of Love. I made this with the hopes of sharing laughs and creating hilarious moments for you to share with your family, friends, and even yourself! 
+>
+> I give all the thanks to the Lord, my creative partner, fellow artist, and good best friend Bob, my Family, and the very few friends who have supported me along the way. It's a long story... "
+> 
+> — **LK2026** 🕊️
+
+---
