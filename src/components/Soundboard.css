@@ -1,0 +1,59 @@
+.soundboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.categories-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.category-section h3 {
+  margin-bottom: 10px;
+  color: #646cff;
+  border-bottom: 2px solid #535bf2;
+  padding-bottom: 5px;
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.sound-button {
+  background-color: #1a1a1a;
+  border: 1px solid #646cff;
+  border-radius: 8px;
+  padding: 20px 10px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sound-button:hover {
+  background-color: #646cff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sound-button:active {
+  transform: translateY(0);
+  background-color: #535bf2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  .sound-button {
+    background-color: #f9f9f9;
+    color: #213547;
+  }
+  .sound-button:hover {
+    color: white;
+  }
+}
