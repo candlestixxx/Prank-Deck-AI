@@ -15,18 +15,27 @@ function App() {
           <button
             className={`nav-button ${activeTab === 'soundboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('soundboard')}
+            title="Open the Mega Soundboard"
+            aria-label="Mega Soundboard Tab"
           >
             Mega Soundboard
           </button>
           <button
             className={`nav-button ${activeTab === 'studio' ? 'active' : ''}`}
             onClick={() => setActiveTab('studio')}
+            title="Open the Voice Studio"
+            aria-label="Voice Studio Tab"
           >
             Voice Studio
           </button>
         </nav>
       </header>
 
+      {/*
+        Routing logic:
+        Since this is a lightweight app, we avoid react-router-dom.
+        Instead, we conditionally render the main view based on the activeTab state.
+      */}
       <main className="app-main">
         {activeTab === 'soundboard' ? <Soundboard /> : <VoiceStudio />}
       </main>

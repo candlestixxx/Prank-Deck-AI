@@ -34,6 +34,9 @@ export default function Soundboard() {
     }
 
     if (sound.type === 'synth') {
+      // Setup Web Audio API Synthesizer Node
+      // Using an oscillator paired with a gain node allows us to generate raw tones
+      // and fade them out exponentially to avoid popping sounds at the end of the note.
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -66,6 +69,8 @@ export default function Soundboard() {
                   key={sound.id}
                   className="sound-button"
                   onClick={() => playSound(sound)}
+                  title={`Play ${sound.label} sound`}
+                  aria-label={`Play ${sound.label}`}
                 >
                   {sound.label}
                 </button>
