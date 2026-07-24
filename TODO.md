@@ -7,5 +7,5 @@
 
 ## Explicit UI Tasks
 - [ ] Add tooltips to the Soundboard buttons explaining what the sound is.
-- [ ] Make the active tab in the navigation bar more visually distinct (perhaps a glowing border).
-- [ ] Add an "X" or clear button to the Voice Studio to discard the current recording without playing it.
+- [x] Make the active tab in the navigation bar more visually distinct (perhaps a glowing border).
+- [x] Add an "X" or clear button to the Voice Studio to discard the current recording without playing it.

@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.1.0] - 2026-07-21
+
+### Added
+- Added "Save to Disk" functionality in the Voice Studio, allowing local export of `.webm` files.
+- Added a "Discard" button in the Voice Studio to safely clear the active recording buffer.
+- Updated Navigation UI to include a glowing border and distinct visual state for the active tab.
+
 ## [1.0.0] - 2026-07-17
 
 ### Added

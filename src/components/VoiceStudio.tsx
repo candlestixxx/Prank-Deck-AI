@@ -50,6 +50,33 @@ export default function VoiceStudio() {
     }
   };
 
+  const discardRecording = () => {
+    setHasRecording(false);
+    audioBlobRef.current = null;
+    audioChunksRef.current = [];
+    if (sourceNodeRef.current) {
+      try {
+        sourceNodeRef.current.stop();
+        sourceNodeRef.current.disconnect();
+      } catch (e) {
+        // Ignore
+      }
+    }
+  };
+
+  const saveToDisk = () => {
+    if (!audioBlobRef.current) return;
+    const url = URL.createObjectURL(audioBlobRef.current);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `prankdeck-recording-${Date.now()}.webm`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   const playWithEffect = async () => {
     if (!audioBlobRef.current) return;
 
@@ -137,9 +164,17 @@ export default function VoiceStudio() {
             </label>
           </div>
 
-          <button className="play-btn" onClick={playWithEffect}>
-            ▶ Play Recording
-          </button>
+          <div className="action-buttons">
+            <button className="play-btn" onClick={playWithEffect}>
+              ▶ Play
+            </button>
+            <button className="save-btn" onClick={saveToDisk} title="Save audio to your computer">
+              💾 Save
+            </button>
+            <button className="discard-btn" onClick={discardRecording} title="Clear recording">
+              ✖ Discard
+            </button>
+          </div>
         </div>
       )}
     </div>
