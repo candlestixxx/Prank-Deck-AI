@@ -1,13 +1,5 @@
-# MEMORY: Architectural Observations
+# Architectural Memories
 
-## Codebase Traits
-*   **Framework:** React 18+ with TypeScript for strong typing and component architecture.
-*   **Build Tool:** Vite for lightning-fast HMR and optimized production builds.
-*   **Audio Engine:** The application exclusively uses the browser's native `AudioContext` and `MediaRecorder` APIs.
-    *   *Soundboard:* Utilizes `OscillatorNode` to generate synthesized sounds dynamically, eliminating the need to manage `.mp3` or `.wav` static assets in the repository.
-    *   *Voice Studio:* Captures audio as `audio/webm` blobs, decodes them via `AudioContext.decodeAudioData`, and manipulates playback speed/pitch using `playbackRate` on an `AudioBufferSourceNode`.
-
-## Design Preferences
-*   **Component Structure:** Logically separated functional components (`Soundboard.tsx`, `VoiceStudio.tsx`) injected into a central `App.tsx` router/tab-manager.
-*   **CSS strategy:** Scoped CSS files per component (`Soundboard.css`) combined with a global `App.css` for structural layout and color variables (supporting light/dark mode via `prefers-color-scheme`).
-*   **Strict Security Posture:** No dependencies on Node.js backend services or C++ system drivers. The architecture acts entirely as a static SPA (Single Page Application).
+- The project relies heavily on the Web Audio API (`AudioContext`) to synthesize sounds and process microphone input.
+- Routing is simply handled via a React state variable `activeTab` in `App.tsx` instead of a heavy router like `react-router-dom`, keeping the app lightweight.
+- Media handling requires user interaction to initialize the audio context due to browser autoplay policies.
