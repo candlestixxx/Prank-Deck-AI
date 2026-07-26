@@ -31,8 +31,6 @@ export default function VoiceStudio() {
         setHasRecording(true);
 
         // Stop all tracks to release microphone
-        // Why? Leaving tracks open keeps the recording indicator active in the browser tab
-        // and wastes system resources.
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -52,6 +50,33 @@ export default function VoiceStudio() {
     }
   };
 
+  const discardRecording = () => {
+    setHasRecording(false);
+    audioBlobRef.current = null;
+    audioChunksRef.current = [];
+    if (sourceNodeRef.current) {
+      try {
+        sourceNodeRef.current.stop();
+        sourceNodeRef.current.disconnect();
+      } catch (e) {
+        // Ignore
+      }
+    }
+  };
+
+  const saveToDisk = () => {
+    if (!audioBlobRef.current) return;
+    const url = URL.createObjectURL(audioBlobRef.current);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `prankdeck-recording-${Date.now()}.webm`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   const playWithEffect = async () => {
     if (!audioBlobRef.current) return;
 
@@ -65,7 +90,7 @@ export default function VoiceStudio() {
       try {
         sourceNodeRef.current.stop();
         sourceNodeRef.current.disconnect();
-      } catch {
+      } catch (e) {
         // Ignore if already stopped
       }
     }
@@ -97,21 +122,11 @@ export default function VoiceStudio() {
 
       <div className="recording-controls">
         {!isRecording ? (
-          <button
-            className="record-btn"
-            onClick={startRecording}
-            title="Start recording your voice"
-            aria-label="Start Recording"
-          >
+          <button className="record-btn" onClick={startRecording}>
             🎤 Start Recording
           </button>
         ) : (
-          <button
-            className="stop-btn"
-            onClick={stopRecording}
-            title="Stop recording"
-            aria-label="Stop Recording"
-          >
+          <button className="stop-btn" onClick={stopRecording}>
             ⏹ Stop Recording
           </button>
         )}
@@ -123,43 +138,43 @@ export default function VoiceStudio() {
         <div className="playback-controls">
           <h3>Apply Effect & Play</h3>
           <div className="effects-selector">
-            <label title="Play back with normal pitch">
+            <label>
               <input
                 type="radio"
                 value="normal"
                 checked={effect === 'normal'}
                 onChange={(e) => setEffect(e.target.value)}
-                aria-label="Normal Effect"
               /> Normal
             </label>
-            <label title="Play back with a high-pitched chipmunk effect">
+            <label>
               <input
                 type="radio"
                 value="chipmunk"
                 checked={effect === 'chipmunk'}
                 onChange={(e) => setEffect(e.target.value)}
-                aria-label="Chipmunk Effect"
               /> Chipmunk
             </label>
-            <label title="Play back with a low-pitched monster effect">
+            <label>
               <input
                 type="radio"
                 value="monster"
                 checked={effect === 'monster'}
                 onChange={(e) => setEffect(e.target.value)}
-                aria-label="Monster Effect"
               /> Monster
             </label>
           </div>
 
-          <button
-            className="play-btn"
-            onClick={playWithEffect}
-            title="Play the recording with the selected effect"
-            aria-label="Play Recording"
-          >
-            ▶ Play Recording
-          </button>
+          <div className="action-buttons">
+            <button className="play-btn" onClick={playWithEffect}>
+              ▶ Play
+            </button>
+            <button className="save-btn" onClick={saveToDisk} title="Save audio to your computer">
+              💾 Save
+            </button>
+            <button className="discard-btn" onClick={discardRecording} title="Clear recording">
+              ✖ Discard
+            </button>
+          </div>
         </div>
       )}
     </div>

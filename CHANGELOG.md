@@ -1,11 +1,18 @@
-# Changelog
+# CHANGELOG
 
-All notable changes to this project will be documented in this file.
+## [1.1.0] - 2026-07-21
 
-## [1.1.0] - Custom Sounds & Mobile Layout
-- Added custom audio file upload support to the Soundboard component using Blob/ArrayBuffer.
-- Added media queries to `Soundboard.css` and `App.css` to improve mobile responsiveness.
+### Added
+- Added "Save to Disk" functionality in the Voice Studio, allowing local export of `.webm` files.
+- Added a "Discard" button in the Voice Studio to safely clear the active recording buffer.
+- Updated Navigation UI to include a glowing border and distinct visual state for the active tab.
 
-## [1.0.0] - Initial Standardization
-- Initial creation of standard documentation (VISION, MEMORY, DEPLOY, IDEAS, ROADMAP, TODO, HANDOFF, VERSION).
-- Added UI tooltips and robust code commenting to core components.
+## [1.0.0] - 2026-07-17
+
+### Added
+- Initialized PrankDeck Studio (Local Edition).
+- Built "Mega Soundboard" using `AudioContext` and `OscillatorNode` for local, zero-asset playback.
+- Built "Voice Studio" using `MediaRecorder` for capturing local microphone input safely.
+- Implemented basic playback rate modification (Chipmunk, Monster effects) applied locally via `AudioBufferSourceNode`.
+- Created robust safety documentation (`LEGAL_NOTICE.md`).
+- Established core project governance files (`VISION.md`, `MEMORY.md`, `DEPLOY.md`, `IDEAS.md`, `ROADMAP.md`, `TODO.md`, `VERSION.md`).
