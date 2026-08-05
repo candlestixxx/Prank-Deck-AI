@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [1.1.1] — 2026-08-05
+
+### Fixed
+- Synced `package.json` version from `0.0.0` to `1.1.0` (was out of step with `VERSION.md`)
+
+### Added
+- `STRUCTURE.md` — full project structural map with branch inventory, file layout, and architecture notes
+
+### Repository
+- Confirmed all 3 remote feature branches already merged into `main`; no drift
+- No submodules, no upstream fork
+
 ## [1.1.0] - 2026-07-21
 
 ### Added
