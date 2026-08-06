@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [1.2.0] — 2026-08-05
+
+### Added
+- Expanded Voice Studio effects library: 14 voice effects (was 2)
+  - New effects: robot, echo, phone, slowmo, fast, deep, helium, reverb, alien, underwater, megaphone
+  - Each effect has emoji + description label
+  - Audio graph modifiers: `BiquadFilterNode`, delay node, reverb simulation, wave-shaping distortion
+  - Effect definitions include: `playbackRate`, `filter` (type/frequency/Q), `delay` (time/feedback/wet), `distortion`
+  - Effects displayed as scrollable grid of toggle buttons
+- Refactored VoiceStudio component: `EffectDef` interface, `EFFECTS` constant array, stateful effect selection
+
 ## [1.1.1] — 2026-08-05
 
 ### Fixed

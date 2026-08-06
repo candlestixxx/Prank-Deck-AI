@@ -5,8 +5,66 @@
   align-items: center;
 }
 
+/* Instructions panel */
+.instructions-panel {
+  width: 100%;
+  border: 1px solid var(--border, #444);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(100, 108, 255, 0.06);
+  transition: all 0.3s;
+}
+
+.instructions-header {
+  padding: 12px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.instructions-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-h, #f3f4f6);
+}
+
+.instructions-header:hover {
+  background: rgba(100, 108, 255, 0.1);
+}
+
+.instructions-body {
+  padding: 0 20px 16px;
+  text-align: left;
+  font-size: 0.9em;
+  line-height: 1.7;
+  color: var(--text, #9ca3af);
+}
+
+.instructions-body ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.instructions-body li {
+  margin-bottom: 6px;
+}
+
+.instructions-note {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(100, 108, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.85em;
+}
+
+/* Studio description */
+.studio-description {
+  color: #888;
+  margin-top: -10px;
+}
+
+/* Recording controls */
 .recording-controls {
-  margin: 20px 0;
+  margin: 10px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,95 +75,208 @@
   background-color: #dc3545;
   color: white;
   font-size: 1.2em;
-  padding: 10px 20px;
+  padding: 12px 28px;
   border-radius: 25px;
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
-  transition: transform 0.1s;
+  transition: transform 0.1s, opacity 0.2s;
 }
 
-.record-btn:active {
+.record-btn:hover:not(:disabled) {
+  transform: scale(1.03);
+}
+
+.record-btn:active:not(:disabled) {
   transform: scale(0.95);
+}
+
+.record-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .stop-btn {
   background-color: #343a40;
   color: white;
   font-size: 1.2em;
-  padding: 10px 20px;
+  padding: 12px 28px;
   border-radius: 25px;
   border: none;
   cursor: pointer;
 }
 
+.stop-btn:hover {
+  background-color: #444;
+}
+
 .recording-indicator {
   color: #dc3545;
   font-weight: bold;
-  animation: pulse 1.5s infinite;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recording-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
+/* Playback controls */
 .playback-controls {
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;
   border-radius: 12px;
   width: 100%;
-  max-width: 400px;
-}
-
-.effects-selector {
+  max-width: 600px;
   display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 15px 0;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.effects-selector label {
+.playback-controls h3 {
+  margin: 0;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+/* Effects grid */
+.effects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .effects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 6px;
+  }
+}
+
+.effect-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid transparent;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text, #9ca3af);
+  font-size: 0.8em;
+}
+
+.effect-card:hover {
+  background: rgba(100, 108, 255, 0.15);
+  border-color: rgba(100, 108, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.effect-card.selected {
+  background: rgba(100, 108, 255, 0.25);
+  border-color: #646cff;
+  color: white;
+  box-shadow: 0 0 12px rgba(100, 108, 255, 0.3);
+}
+
+.effect-emoji {
+  font-size: 1.5em;
+}
+
+.effect-label {
+  font-weight: 600;
+  font-size: 0.75em;
+  text-align: center;
+}
+
+/* Selected effect info */
+.selected-effect-info {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(100, 108, 255, 0.12);
+  border-radius: 10px;
+  border: 1px solid rgba(100, 108, 255, 0.25);
 }
 
+.selected-effect-info .effect-emoji {
+  font-size: 1.4em;
+}
+
+.selected-effect-info .effect-name {
+  font-weight: 700;
+  color: var(--text-h, #f3f4f6);
+}
+
+.selected-effect-info .effect-desc {
+  color: #888;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+/* Action buttons */
 .action-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 0;
 }
 
 .play-btn {
   background-color: #28a745;
   color: white;
-  font-size: 1.1em;
+  font-size: 1.05em;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
   flex: 1;
+  transition: opacity 0.2s;
+}
+
+.play-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.play-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .save-btn {
   background-color: #007bff;
   color: white;
-  font-size: 1.1em;
+  font-size: 1.05em;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
   flex: 1;
+}
+
+.save-btn:hover {
+  filter: brightness(1.1);
 }
 
 .discard-btn {
-  background-color: #dc3545;
+  background-color: #6c757d;
   color: white;
-  font-size: 1.1em;
+  font-size: 1.05em;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
@@ -113,6 +284,42 @@
   flex: 1;
 }
 
-.play-btn:hover, .save-btn:hover, .discard-btn:hover {
-  filter: brightness(1.1);
+.discard-btn:hover {
+  background-color: #dc3545;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.empty-emoji {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+/* Light mode tweaks */
+@media (prefers-color-scheme: light) {
+  .playback-controls {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .effect-card {
+    background: rgba(0, 0, 0, 0.04);
+    color: #555;
+  }
+
+  .effect-card.selected {
+    color: #213547;
+  }
+
+  .selected-effect-info {
+    background: rgba(100, 108, 255, 0.08);
+  }
+
+  .selected-effect-info .effect-name {
+    color: #213547;
+  }
 }
