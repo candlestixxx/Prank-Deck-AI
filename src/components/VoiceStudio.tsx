@@ -153,7 +153,7 @@ function createReverbGraph(ctx: AudioContext, input: AudioNode, output: AudioNod
 
   const delays = [0.02, 0.035, 0.05, 0.065, 0.08, 0.1, 0.12, 0.15];
   for (const t of delays) {
-    const delay = ctx.createDelayNode();
+    const delay = ctx.createDelay();
     delay.delayTime.value = t;
     const tapGain = ctx.createGain();
     tapGain.gain.value = 0.15 / delays.length;
@@ -302,7 +302,7 @@ export default function VoiceStudio() {
       dryGain.connect(ctx.destination);
       activeNodesRef.current.push(dryGain);
 
-      const delayNode = ctx.createDelayNode();
+      const delayNode = ctx.createDelay();
       delayNode.delayTime.value = effectDef.delay.delayTime;
       const feedbackGain = ctx.createGain();
       feedbackGain.gain.value = effectDef.delay.feedback;
