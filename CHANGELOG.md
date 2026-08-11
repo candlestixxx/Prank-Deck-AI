@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.2.1] — 2026-08-05
+
+### Repository
+- Sync verification: all 3 feature branches already merged, working tree clean
+- Build verified
+- Documentation refreshed
+
 ## [1.2.0] — 2026-08-05
 
 ### Added
