@@ -31,6 +31,8 @@ export default function VoiceStudio() {
         setHasRecording(true);
 
         // Stop all tracks to release microphone
+        // Why? Leaving tracks open keeps the recording indicator active in the browser tab
+        // and wastes system resources.
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -50,33 +52,6 @@ export default function VoiceStudio() {
     }
   };
 
-  const discardRecording = () => {
-    setHasRecording(false);
-    audioBlobRef.current = null;
-    audioChunksRef.current = [];
-    if (sourceNodeRef.current) {
-      try {
-        sourceNodeRef.current.stop();
-        sourceNodeRef.current.disconnect();
-      } catch (e) {
-        // Ignore
-      }
-    }
-  };
-
-  const saveToDisk = () => {
-    if (!audioBlobRef.current) return;
-    const url = URL.createObjectURL(audioBlobRef.current);
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    a.href = url;
-    a.download = `prankdeck-recording-${Date.now()}.webm`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  };
-
   const playWithEffect = async () => {
     if (!audioBlobRef.current) return;
 
@@ -90,7 +65,7 @@ export default function VoiceStudio() {
       try {
         sourceNodeRef.current.stop();
         sourceNodeRef.current.disconnect();
-      } catch (e) {
+      } catch {
         // Ignore if already stopped
       }
     }
@@ -115,6 +90,24 @@ export default function VoiceStudio() {
     source.start(0);
   };
 
+  const downloadRecording = () => {
+    if (!audioBlobRef.current) return;
+
+    // Create an invisible anchor tag to trigger the browser's download functionality
+    // This satisfies the "record and download locally" roadmap requirement securely.
+    const url = URL.createObjectURL(audioBlobRef.current);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `prankdeck-recording-${Date.now()}.webm`;
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="voice-studio-container">
       <h2>Local Voice Studio</h2>
@@ -122,11 +115,21 @@ export default function VoiceStudio() {
 
       <div className="recording-controls">
         {!isRecording ? (
-          <button className="record-btn" onClick={startRecording}>
+          <button
+            className="record-btn"
+            onClick={startRecording}
+            title="Start recording your voice"
+            aria-label="Start Recording"
+          >
             🎤 Start Recording
           </button>
         ) : (
-          <button className="stop-btn" onClick={stopRecording}>
+          <button
+            className="stop-btn"
+            onClick={stopRecording}
+            title="Stop recording"
+            aria-label="Stop Recording"
+          >
             ⏹ Stop Recording
           </button>
         )}
@@ -138,41 +141,52 @@ export default function VoiceStudio() {
         <div className="playback-controls">
           <h3>Apply Effect & Play</h3>
           <div className="effects-selector">
-            <label>
+            <label title="Play back with normal pitch">
               <input
                 type="radio"
                 value="normal"
                 checked={effect === 'normal'}
                 onChange={(e) => setEffect(e.target.value)}
+                aria-label="Normal Effect"
               /> Normal
             </label>
-            <label>
+            <label title="Play back with a high-pitched chipmunk effect">
               <input
                 type="radio"
                 value="chipmunk"
                 checked={effect === 'chipmunk'}
                 onChange={(e) => setEffect(e.target.value)}
+                aria-label="Chipmunk Effect"
               /> Chipmunk
             </label>
-            <label>
+            <label title="Play back with a low-pitched monster effect">
               <input
                 type="radio"
                 value="monster"
                 checked={effect === 'monster'}
                 onChange={(e) => setEffect(e.target.value)}
+                aria-label="Monster Effect"
               /> Monster
             </label>
           </div>
 
-          <div className="action-buttons">
-            <button className="play-btn" onClick={playWithEffect}>
-              ▶ Play
+          <div className="playback-buttons">
+            <button
+              className="play-btn"
+              onClick={playWithEffect}
+              title="Play the recording with the selected effect"
+              aria-label="Play Recording"
+            >
+              ▶ Play Recording
             </button>
-            <button className="save-btn" onClick={saveToDisk} title="Save audio to your computer">
-              💾 Save
-            </button>
-            <button className="discard-btn" onClick={discardRecording} title="Clear recording">
-              ✖ Discard
+
+            <button
+              className="download-btn"
+              onClick={downloadRecording}
+              title="Download your original recording"
+              aria-label="Download Recording"
+            >
+              💾 Download
             </button>
           </div>
         </div>

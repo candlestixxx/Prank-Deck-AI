@@ -70,9 +70,7 @@ body {
 .nav-button.active {
   background-color: #646cff;
   color: white;
-  border-color: #747bff;
-  box-shadow: 0 0 10px rgba(100, 108, 255, 0.6);
-  transform: translateY(-1px);
+  border-color: #646cff;
 }
 
 .app-main {
