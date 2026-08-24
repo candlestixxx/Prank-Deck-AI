@@ -51,6 +51,18 @@
   100% { opacity: 1; }
 }
 
+.visualizer-container {
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.audio-canvas {
+  background-color: #242424;
+  display: block;
+}
+
 .playback-controls {
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;

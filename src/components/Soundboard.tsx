@@ -1,52 +1,29 @@
-import { useState, useRef } from 'react';
-import type { ChangeEvent } from 'react';
+import { useRef } from 'react';
 import './Soundboard.css';
 
 // These would normally be real audio files, but we'll use a synthesizer for demonstration to avoid needing assets.
 const SOUND_CATEGORIES = {
   Greetings: [
-    { id: 'g1', label: 'Hello!', type: 'synth', freq: 440, typeOsc: 'sine' },
-    { id: 'g2', label: 'Welcome', type: 'synth', freq: 523.25, typeOsc: 'triangle' },
-    { id: 'g3', label: 'Hey there', type: 'synth', freq: 659.25, typeOsc: 'square' },
+    { id: 'g1', label: 'Hello!', type: 'synth', freq: 440, typeOsc: 'sine', desc: 'A smooth sine wave beep' },
+    { id: 'g2', label: 'Welcome', type: 'synth', freq: 523.25, typeOsc: 'triangle', desc: 'A bright triangle wave tone' },
+    { id: 'g3', label: 'Hey there', type: 'synth', freq: 659.25, typeOsc: 'square', desc: 'A classic 8-bit square wave' },
   ],
   Reactions: [
-    { id: 'r1', label: 'Laugh', type: 'synth', freq: 880, typeOsc: 'sawtooth' },
-    { id: 'r2', label: 'Gasp', type: 'synth', freq: 1046.50, typeOsc: 'triangle' },
-    { id: 'r3', label: 'Boo', type: 'synth', freq: 130.81, typeOsc: 'sawtooth' },
+    { id: 'r1', label: 'Laugh', type: 'synth', freq: 880, typeOsc: 'sawtooth', desc: 'A sharp sawtooth giggle' },
+    { id: 'r2', label: 'Gasp', type: 'synth', freq: 1046.50, typeOsc: 'triangle', desc: 'A high pitched surprise' },
+    { id: 'r3', label: 'Boo', type: 'synth', freq: 130.81, typeOsc: 'sawtooth', desc: 'A low, rumbling disapproval' },
   ],
   Effects: [
-    { id: 'e1', label: 'Drum Roll', type: 'synth', freq: 100, typeOsc: 'square' },
-    { id: 'e2', label: 'Rimshot', type: 'synth', freq: 300, typeOsc: 'sawtooth' },
-    { id: 'e3', label: 'Trombone', type: 'synth', freq: 80, typeOsc: 'sine' },
+    { id: 'e1', label: 'Drum Roll', type: 'synth', freq: 100, typeOsc: 'square', desc: 'A fast-clicking snare substitute' },
+    { id: 'e2', label: 'Rimshot', type: 'synth', freq: 300, typeOsc: 'sawtooth', desc: 'A snappy rimshot synth' },
+    { id: 'e3', label: 'Trombone', type: 'synth', freq: 80, typeOsc: 'sine', desc: 'A deep, sad trombone note' },
   ]
-};
-
-type CustomSound = {
-  id: string;
-  label: string;
-  type: 'custom';
-  file: File;
 };
 
 export default function Soundboard() {
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const [customSounds, setCustomSounds] = useState<CustomSound[]>([]);
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newSounds: CustomSound[] = Array.from(e.target.files).map((file, index) => ({
-        id: `custom-${Date.now()}-${index}`,
-        label: file.name.replace(/\.[^/.]+$/, ""),
-        type: 'custom',
-        file
-      }));
-
-      // Combine redundant code paths by directly updating state with spread operator
-      setCustomSounds(prev => [...prev, ...newSounds]);
-    }
-  };
-
-  const playSound = async (sound: any) => {
+  const playSound = (sound: any) => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
@@ -57,9 +34,6 @@ export default function Soundboard() {
     }
 
     if (sound.type === 'synth') {
-      // Setup Web Audio API Synthesizer Node
-      // Using an oscillator paired with a gain node allows us to generate raw tones
-      // and fade them out exponentially to avoid popping sounds at the end of the note.
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -74,20 +48,6 @@ export default function Soundboard() {
 
       oscillator.start();
       oscillator.stop(ctx.currentTime + 0.5);
-    } else if (sound.type === 'custom') {
-      // Decode and play custom audio file
-      // Note: Re-reading arrayBuffer from File handles multiple plays since decodeAudioData detaches the buffer
-      try {
-        const arrayBuffer = await sound.file.arrayBuffer();
-        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-
-        const source = ctx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(ctx.destination);
-        source.start(0);
-      } catch (err) {
-        console.error("Error playing custom sound:", err);
-      }
     }
   };
 
@@ -95,35 +55,6 @@ export default function Soundboard() {
     <div className="soundboard-container">
       <h2>Mega Soundboard</h2>
       <p>Tap a button to play a sound locally on your speakers.</p>
-
-      <div className="custom-upload-section category-section">
-        <h3>Custom Sounds</h3>
-        <p className="upload-description">Upload your own local audio files to play (they stay in your browser).</p>
-        <input
-          type="file"
-          accept="audio/*"
-          multiple
-          onChange={handleFileUpload}
-          title="Upload custom audio files"
-          aria-label="Upload Custom Sounds"
-          className="upload-input"
-        />
-        {customSounds.length > 0 && (
-          <div className="buttons-grid custom-buttons-grid">
-            {customSounds.map((sound) => (
-              <button
-                key={sound.id}
-                className="sound-button custom-sound-button"
-                onClick={() => playSound(sound)}
-                title={`Play custom sound: ${sound.label}`}
-                aria-label={`Play ${sound.label}`}
-              >
-                {sound.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
 
       <div className="categories-grid">
         {Object.entries(SOUND_CATEGORIES).map(([category, sounds]) => (
@@ -134,9 +65,8 @@ export default function Soundboard() {
                 <button
                   key={sound.id}
                   className="sound-button"
+                  title={sound.desc}
                   onClick={() => playSound(sound)}
-                  title={`Play ${sound.label} sound`}
-                  aria-label={`Play ${sound.label}`}
                 >
                   {sound.label}
                 </button>

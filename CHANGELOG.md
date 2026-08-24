@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.2.0] - 2026-07-24
+
+### Added
+- Added a visual audio analyzer (canvas waveform) to the Voice Studio to show real-time microphone input levels during recording.
+- Added descriptive tooltips to the Soundboard buttons.
+
 ## [1.1.0] - 2026-07-21
 
 ### Added

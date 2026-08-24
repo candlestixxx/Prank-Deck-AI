@@ -9,7 +9,7 @@
 ## Phase 2: Enhanced Local Effects (Active)
 - [ ] Refactor Voice Studio to use `BiquadFilterNode` for telephone/radio effects.
 - [x] Add a "Save to Disk" button to allow users to export their recorded `.webm` files locally.
-- [ ] Add visual audio analyzers (canvas-based waveforms) to the Voice Studio to show microphone input levels.
+- [x] Add visual audio analyzers (canvas-based waveforms) to the Voice Studio to show microphone input levels.
 
 ## Phase 3: Polish & Accessibility (Future)
 - [ ] Convert static UI to a Progressive Web App (PWA) with a Service Worker for offline capability.
