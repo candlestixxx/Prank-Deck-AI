@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './VoiceStudio.css';
 
 type EffectId =
@@ -177,9 +177,76 @@ export default function VoiceStudio() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const activeNodesRef = useRef<AudioNode[]>([]);
 
+  // Analyzer refs (live waveform visualization)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const analyzerRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const drawWaveform = () => {
+    if (!analyzerRef.current || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const canvasCtx = canvas.getContext('2d');
+    if (!canvasCtx) return;
+
+    const bufferLength = analyzerRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyzerRef.current.getByteTimeDomainData(dataArray);
+
+    canvasCtx.fillStyle = 'rgba(36, 36, 36, 1)';
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+    canvasCtx.lineWidth = 2;
+    canvasCtx.strokeStyle = '#dc3545';
+    canvasCtx.beginPath();
+
+    const sliceWidth = (canvas.width * 1.0) / bufferLength;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      const v = dataArray[i] / 128.0;
+      const y = (v * canvas.height) / 2;
+
+      if (i === 0) {
+        canvasCtx.moveTo(x, y);
+      } else {
+        canvasCtx.lineTo(x, y);
+      }
+      x += sliceWidth;
+    }
+
+    canvasCtx.lineTo(canvas.width, canvas.height / 2);
+    canvasCtx.stroke();
+
+    animationFrameRef.current = requestAnimationFrame(drawWaveform);
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      // Set up live waveform analyzer
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioCtxRef.current;
+      const source = ctx.createMediaStreamSource(stream);
+      const analyzer = ctx.createAnalyser();
+      analyzer.fftSize = 2048;
+      source.connect(analyzer);
+      analyzerRef.current = analyzer;
+      drawWaveform();
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -197,6 +264,15 @@ export default function VoiceStudio() {
 
         // Stop all tracks to release microphone
         stream.getTracks().forEach((track) => track.stop());
+
+        // Stop waveform visualization and clear canvas
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        if (canvasRef.current) {
+          const c = canvasRef.current.getContext('2d');
+          if (c) c.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
       };
 
       mediaRecorder.start();
@@ -391,6 +467,12 @@ export default function VoiceStudio() {
         {isRecording && (
           <div className="recording-indicator">
             <span className="recording-dot" /> Recording... Speak now!
+          </div>
+        )}
+
+        {isRecording && (
+          <div className="visualizer-container">
+            <canvas ref={canvasRef} width="400" height="100" className="audio-canvas"></canvas>
           </div>
         )}
       </div>

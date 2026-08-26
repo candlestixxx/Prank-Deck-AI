@@ -127,6 +127,18 @@
   animation: pulse 1.2s infinite;
 }
 
+.visualizer-container {
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.audio-canvas {
+  background-color: #242424;
+  display: block;
+}
+
 @keyframes pulse {
   0% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(1.3); }
