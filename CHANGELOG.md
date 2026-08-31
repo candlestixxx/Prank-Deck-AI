@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.3.0] - 2026-07-24
+
+### Added
+- Added a "Telephone" DSP effect utilizing chained `BiquadFilterNode`s (highpass and lowpass) to the Voice Studio.
+- Implemented a clean, inline UI error message for microphone permission failures, replacing the default browser alert.
+
 ## [1.2.0] - 2026-07-24
 
 ### Added

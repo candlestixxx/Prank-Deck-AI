@@ -5,6 +5,7 @@ export default function VoiceStudio() {
   const [isRecording, setIsRecording] = useState(false);
   const [hasRecording, setHasRecording] = useState(false);
   const [effect, setEffect] = useState('normal');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -66,6 +67,7 @@ export default function VoiceStudio() {
   };
 
   const startRecording = async () => {
+    setErrorMsg(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -120,7 +122,7 @@ export default function VoiceStudio() {
       setHasRecording(false);
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      alert("Could not access microphone. Please check permissions.");
+      setErrorMsg("Could not access microphone. Please check your browser permissions and ensure no other application is using it.");
     }
   };
 
@@ -192,7 +194,23 @@ export default function VoiceStudio() {
       source.playbackRate.value = 1.0;
     }
 
-    source.connect(ctx.destination);
+    // Apply Biquad Filter for Telephone effect
+    if (effect === 'telephone') {
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = 'lowpass';
+      lowpass.frequency.value = 2000;
+
+      const highpass = ctx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.value = 500;
+
+      source.connect(lowpass);
+      lowpass.connect(highpass);
+      highpass.connect(ctx.destination);
+    } else {
+      source.connect(ctx.destination);
+    }
+
     source.start(0);
   };
 
@@ -214,6 +232,12 @@ export default function VoiceStudio() {
 
         {isRecording && <div className="recording-indicator">Recording...</div>}
       </div>
+
+      {errorMsg && (
+        <div className="error-message">
+          <p>⚠️ {errorMsg}</p>
+        </div>
+      )}
 
       <div className="visualizer-container" style={{ display: isRecording ? 'block' : 'none' }}>
          <canvas ref={canvasRef} width="400" height="100" className="audio-canvas"></canvas>
@@ -246,6 +270,14 @@ export default function VoiceStudio() {
                 checked={effect === 'monster'}
                 onChange={(e) => setEffect(e.target.value)}
               /> Monster
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="telephone"
+                checked={effect === 'telephone'}
+                onChange={(e) => setEffect(e.target.value)}
+              /> Telephone
             </label>
           </div>
 

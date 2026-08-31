@@ -6,8 +6,8 @@
 - [x] Implement local `getUserMedia` recording block for Voice Studio.
 - [x] Implement primary safety disclaimers (`LEGAL_NOTICE.md`).
 
-## Phase 2: Enhanced Local Effects (Active)
-- [ ] Refactor Voice Studio to use `BiquadFilterNode` for telephone/radio effects.
+## Phase 2: Enhanced Local Effects (Completed)
+- [x] Refactor Voice Studio to use `BiquadFilterNode` for telephone/radio effects.
 - [x] Add a "Save to Disk" button to allow users to export their recorded `.webm` files locally.
 - [x] Add visual audio analyzers (canvas-based waveforms) to the Voice Studio to show microphone input levels.
 
