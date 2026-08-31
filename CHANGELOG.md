@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - Audio Canvas Visualizer
+- Added a `<canvas>` element to Voice Studio that draws real-time oscilloscope waveforms.
+- Implemented Web Audio API `AnalyserNode` logic to hook into the mic stream and playback nodes.
+- Styled the visualizer with a sleek dark theme and blue accent line.
+
 ## [1.2.0] - Voice Studio Recording Downloads
 - Added ability to download recorded `.webm` files directly from the browser locally in Voice Studio.
 - Completed all outstanding immediate tasks in TODO.md.

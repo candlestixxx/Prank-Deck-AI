@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './VoiceStudio.css';
 
 export default function VoiceStudio() {
@@ -11,10 +11,84 @@ export default function VoiceStudio() {
   const audioBlobRef = useRef<Blob | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
+  // Clean up animation frame on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const drawWaveform = () => {
+    if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    if (!canvasRef.current || !analyserRef.current) return;
+
+    const canvas = canvasRef.current;
+    const canvasCtx = canvas.getContext('2d');
+    if (!canvasCtx) return;
+
+    const analyser = analyserRef.current;
+    analyser.fftSize = 2048;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+      animationFrameRef.current = requestAnimationFrame(draw);
+
+      analyser.getByteTimeDomainData(dataArray);
+
+      canvasCtx.fillStyle = 'rgba(36, 36, 36, 1)';
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      canvasCtx.lineWidth = 2;
+      canvasCtx.strokeStyle = '#646cff';
+      canvasCtx.beginPath();
+
+      const sliceWidth = canvas.width * 1.0 / bufferLength;
+      let x = 0;
+
+      for(let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+
+        if (i === 0) {
+          canvasCtx.moveTo(x, y);
+        } else {
+          canvasCtx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+
+      canvasCtx.lineTo(canvas.width, canvas.height / 2);
+      canvasCtx.stroke();
+    };
+
+    draw();
+  };
 
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Setup Web Audio API for visualization during recording
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioCtxRef.current;
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      source.connect(analyser);
+      analyserRef.current = analyser;
+      drawWaveform();
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -34,6 +108,20 @@ export default function VoiceStudio() {
         // Why? Leaving tracks open keeps the recording indicator active in the browser tab
         // and wastes system resources.
         stream.getTracks().forEach(track => track.stop());
+
+        // Stop visualization
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+
+          // Clear canvas
+          if (canvasRef.current) {
+             const ctx = canvasRef.current.getContext('2d');
+             if (ctx) {
+               ctx.fillStyle = 'rgba(36, 36, 36, 1)';
+               ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+             }
+          }
+        }
       };
 
       mediaRecorder.start();
@@ -63,6 +151,7 @@ export default function VoiceStudio() {
     // Stop previous playback if any
     if (sourceNodeRef.current) {
       try {
+        sourceNodeRef.current.onended = null; // Unbind previous callback to prevent clearing new canvas
         sourceNodeRef.current.stop();
         sourceNodeRef.current.disconnect();
       } catch {
@@ -86,7 +175,28 @@ export default function VoiceStudio() {
       source.playbackRate.value = 1.0;
     }
 
-    source.connect(ctx.destination);
+    // Connect to analyser for visualization during playback
+    const analyser = ctx.createAnalyser();
+    source.connect(analyser);
+    analyser.connect(ctx.destination);
+    analyserRef.current = analyser;
+
+    drawWaveform();
+
+    source.onended = () => {
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+            // Clear canvas
+            if (canvasRef.current) {
+               const ctx = canvasRef.current.getContext('2d');
+               if (ctx) {
+                 ctx.fillStyle = 'rgba(36, 36, 36, 1)';
+                 ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+               }
+            }
+        }
+    }
+
     source.start(0);
   };
 
@@ -112,6 +222,17 @@ export default function VoiceStudio() {
     <div className="voice-studio-container">
       <h2>Local Voice Studio</h2>
       <p>Record your voice and play it back locally with fun effects.</p>
+
+      <div className="visualizer-container">
+        <canvas
+          ref={canvasRef}
+          width="400"
+          height="100"
+          className="audio-canvas"
+          title="Real-time Audio Visualizer"
+          aria-label="Audio Waveform Visualizer"
+        />
+      </div>
 
       <div className="recording-controls">
         {!isRecording ? (

@@ -3,3 +3,4 @@
 - [x] Refine CSS for better mobile responsive design.
 - [x] Enhance accessibility for screen readers.
 - [x] Enhance Voice Studio to support downloading recorded clips.
+- [x] Add an Audio Canvas Visualizer to Voice Studio for real-time waveforms.
