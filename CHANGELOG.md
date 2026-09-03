@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.4.0] - 2026-07-25
+
+### Added
+- Implemented ADSR (Attack, Decay, Sustain, Release) envelope shaping for the Soundboard synthesizer, dramatically improving the percussive and dynamic quality of the generated sounds.
+- Added full keyboard accessibility (a11y) to the Soundboard grid, including `Enter`/`Space` triggers and visible focus outlines.
+
 ## [1.3.0] - 2026-07-24
 
 ### Added
