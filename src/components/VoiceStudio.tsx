@@ -166,18 +166,57 @@ export default function VoiceStudio() {
     source.buffer = audioBuffer;
     sourceNodeRef.current = source;
 
-    // Apply simple pitch shifting for effects
+    let lastNode: AudioNode = source;
+
+    // Apply DSP effects
     if (effect === 'chipmunk') {
       source.playbackRate.value = 1.8;
     } else if (effect === 'monster') {
       source.playbackRate.value = 0.6;
+    } else if (effect === 'radio') {
+      // Radio effect: bandpass filter to mimic small speakers
+      const highpass = ctx.createBiquadFilter();
+      highpass.type = "highpass";
+      highpass.frequency.value = 800;
+
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = "lowpass";
+      lowpass.frequency.value = 2000;
+
+      const distortion = ctx.createWaveShaper();
+      distortion.curve = new Float32Array([-0.8, -0.4, 0, 0.4, 0.8]);
+
+      source.connect(highpass);
+      highpass.connect(lowpass);
+      lowpass.connect(distortion);
+
+      lastNode = distortion;
+    } else if (effect === 'echo') {
+      // Echo effect: Delay node + feedback gain
+      const delay = ctx.createDelay(1.0);
+      delay.delayTime.value = 0.3;
+
+      const feedback = ctx.createGain();
+      feedback.gain.value = 0.4;
+
+      const compressor = ctx.createDynamicsCompressor(); // Prevents clipping
+
+      source.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay); // loop
+
+      // We want to hear the dry signal and the wet signal (echo)
+      source.connect(compressor);
+      delay.connect(compressor);
+
+      lastNode = compressor;
     } else {
       source.playbackRate.value = 1.0;
     }
 
     // Connect to analyser for visualization during playback
     const analyser = ctx.createAnalyser();
-    source.connect(analyser);
+    lastNode.connect(analyser);
     analyser.connect(ctx.destination);
     analyserRef.current = analyser;
 
@@ -288,6 +327,24 @@ export default function VoiceStudio() {
                 onChange={(e) => setEffect(e.target.value)}
                 aria-label="Monster Effect"
               /> Monster
+            </label>
+            <label title="Play back with a tinny radio effect">
+              <input
+                type="radio"
+                value="radio"
+                checked={effect === 'radio'}
+                onChange={(e) => setEffect(e.target.value)}
+                aria-label="Radio Effect"
+              /> Radio
+            </label>
+            <label title="Play back with an echoing delay effect">
+              <input
+                type="radio"
+                value="echo"
+                checked={effect === 'echo'}
+                onChange={(e) => setEffect(e.target.value)}
+                aria-label="Echo Effect"
+              /> Echo
             </label>
           </div>
 

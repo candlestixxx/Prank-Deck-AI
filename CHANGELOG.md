@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - Advanced DSP Filters
+- Added 'Radio' effect to Voice Studio using a BiquadFilterNode chain to simulate small speakers.
+- Added 'Echo' effect to Voice Studio using a DelayNode with a feedback loop.
+
 ## [1.3.0] - Audio Canvas Visualizer
 - Added a `<canvas>` element to Voice Studio that draws real-time oscilloscope waveforms.
 - Implemented Web Audio API `AnalyserNode` logic to hook into the mic stream and playback nodes.
