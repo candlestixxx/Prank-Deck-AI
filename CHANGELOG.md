@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.6.0] - 2026-07-27
+
+### Added
+- Upgraded the static web application to a Progressive Web App (PWA) using `vite-plugin-pwa` and Workbox, allowing for offline capability and native-like installation on devices.
+- Generated a `manifest.webmanifest` and Service Worker during the build process.
+
 ## [1.5.0] - 2026-07-26
 
 ### Added

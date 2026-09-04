@@ -11,7 +11,7 @@
 - [x] Add a "Save to Disk" button to allow users to export their recorded `.webm` files locally.
 - [x] Add visual audio analyzers (canvas-based waveforms) to the Voice Studio to show microphone input levels.
 
-## Phase 3: Polish & Accessibility (Active)
-- [ ] Convert static UI to a Progressive Web App (PWA) with a Service Worker for offline capability.
+## Phase 3: Polish & Accessibility (Completed)
+- [x] Convert static UI to a Progressive Web App (PWA) with a Service Worker for offline capability.
 - [x] Implement full keyboard navigation (a11y) across the Soundboard grid.
 - [x] Add customizable theming (Light/Dark/Neon).
