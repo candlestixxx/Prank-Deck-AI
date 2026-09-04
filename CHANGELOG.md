@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.5.0] - 2026-07-26
+
+### Added
+- Implemented a dynamic Light/Dark mode UI toggle via a button in the main header, refactoring CSS to use `data-theme` CSS variables.
+- Improved cross-browser compatibility in the Voice Studio by dynamically determining the best supported recording `mimeType` using `MediaRecorder.isTypeSupported` (e.g., fallback to `audio/mp4` for Safari).
+- Updated "Save to Disk" functionality to export files with the correct extension based on the actual recorded mime type.
+
 ## [1.4.0] - 2026-07-25
 
 ### Added

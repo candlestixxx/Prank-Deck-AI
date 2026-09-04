@@ -1,7 +1,7 @@
 # TODO
 
 ## Immediate Bug Fixes & Refactoring
-- [ ] Currently, the `VoiceStudio` component forces a `webm` blob structure. Evaluate cross-browser compatibility (Safari may prefer `mp4` or raw `pcm` via `AudioWorklet`).
+- [x] Currently, the `VoiceStudio` component forces a `webm` blob structure. Evaluate cross-browser compatibility (Safari may prefer `mp4` or raw `pcm` via `AudioWorklet`).
 - [x] Add explicit error handling UI to the microphone permission catch block (currently it just uses a standard browser `alert()`).
 - [x] The synth soundboard uses basic oscillators. Refactor to accept optional parameters for envelope shaping to make the "Drum Roll" actually sound like a drum.
 

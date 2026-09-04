@@ -24,20 +24,21 @@
 }
 
 .sound-button {
-  background-color: #1a1a1a;
-  border: 1px solid #646cff;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
   border-radius: 8px;
   padding: 20px 10px;
   font-size: 1em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  color: #ffffff;
+  color: var(--button-text);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .sound-button:hover {
-  background-color: #646cff;
+  background-color: var(--button-border);
+  color: white;
   transform: translateY(-2px);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
@@ -49,16 +50,6 @@
 }
 
 .sound-button:focus-visible {
-  outline: 3px solid #646cff;
+  outline: 3px solid var(--button-border);
   outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: light) {
-  .sound-button {
-    background-color: #f9f9f9;
-    color: #213547;
-  }
-  .sound-button:hover {
-    color: white;
-  }
 }

@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Soundboard from './components/Soundboard';
 import VoiceStudio from './components/VoiceStudio';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'soundboard' | 'studio'>('soundboard');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  useEffect(() => {
+    // Check initial system preference or local storage (simplifying for this demo to just state)
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>PrankDeck Studio (Local)</h1>
+        <div className="header-top">
+          <h1>PrankDeck Studio (Local)</h1>
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+          </button>
+        </div>
         <p className="app-subtitle">Safe, web-based soundboard & voice effects for personal entertainment</p>
         <nav className="app-nav">
           <button

@@ -14,4 +14,4 @@
 ## Phase 3: Polish & Accessibility (Active)
 - [ ] Convert static UI to a Progressive Web App (PWA) with a Service Worker for offline capability.
 - [x] Implement full keyboard navigation (a11y) across the Soundboard grid.
-- [ ] Add customizable theming (Light/Dark/Neon).
+- [x] Add customizable theming (Light/Dark/Neon).

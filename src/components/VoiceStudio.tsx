@@ -66,6 +66,21 @@ export default function VoiceStudio() {
     animationFrameRef.current = requestAnimationFrame(drawWaveform);
   };
 
+  const getSupportedMimeType = () => {
+    const types = [
+      'audio/webm',
+      'audio/mp4',
+      'audio/ogg',
+      'audio/aac',
+    ];
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+    return ''; // Default to browser's native format if none explicitly match
+  };
+
   const startRecording = async () => {
     setErrorMsg(null);
     try {
@@ -85,7 +100,9 @@ export default function VoiceStudio() {
 
       drawWaveform();
 
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = getSupportedMimeType();
+      const options = mimeType ? { mimeType } : undefined;
+      const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -96,7 +113,7 @@ export default function VoiceStudio() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType || 'audio/webm' });
         audioBlobRef.current = audioBlob;
         setHasRecording(true);
 
@@ -154,7 +171,15 @@ export default function VoiceStudio() {
     document.body.appendChild(a);
     a.style.display = 'none';
     a.href = url;
-    a.download = `prankdeck-recording-${Date.now()}.webm`;
+
+    // Determine file extension based on blob type
+    const mimeType = audioBlobRef.current.type;
+    let ext = 'webm';
+    if (mimeType.includes('mp4')) ext = 'mp4';
+    else if (mimeType.includes('ogg')) ext = 'ogg';
+    else if (mimeType.includes('aac')) ext = 'aac';
+
+    a.download = `prankdeck-recording-${Date.now()}.${ext}`;
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
