@@ -5,3 +5,4 @@
 - [x] Enhance Voice Studio to support downloading recorded clips.
 - [x] Add an Audio Canvas Visualizer to Voice Studio for real-time waveforms.
 - [x] Enhance Voice Studio DSP Filters (Radio, Echo).
+- [x] Add IndexedDB persistence for Custom Sound uploads to Soundboard.

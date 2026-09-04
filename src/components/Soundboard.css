@@ -54,6 +54,39 @@
   background-color: #4CAF50;
 }
 
+.custom-sound-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.custom-sound-wrapper .sound-button {
+  width: 100%;
+}
+
+.delete-sound-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: transform 0.1s;
+}
+
+.delete-sound-button:hover {
+  transform: scale(1.1);
+  background-color: #c82333;
+}
+
 .sound-button {
   background-color: #1a1a1a;
   border: 1px solid #646cff;

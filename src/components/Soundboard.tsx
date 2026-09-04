@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import './Soundboard.css';
 
@@ -28,9 +28,60 @@ type CustomSound = {
   file: File;
 };
 
+const DB_NAME = 'PrankDeckDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'customSounds';
+
 export default function Soundboard() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const [customSounds, setCustomSounds] = useState<CustomSound[]>([]);
+
+  // Initialize IndexedDB and load existing sounds
+  useEffect(() => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    };
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      try {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const getAllRequest = store.getAll();
+
+        getAllRequest.onsuccess = () => {
+          setCustomSounds(getAllRequest.result || []);
+        };
+      } catch {
+        // Store might not exist yet if it failed to create
+      }
+    };
+  }, []);
+
+  const saveSoundToDB = (sound: CustomSound) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      store.put(sound);
+    };
+  };
+
+  const removeSoundFromDB = (id: string) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      store.delete(id);
+    };
+  };
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -41,9 +92,15 @@ export default function Soundboard() {
         file
       }));
 
-      // Combine redundant code paths by directly updating state with spread operator
       setCustomSounds(prev => [...prev, ...newSounds]);
+      newSounds.forEach(sound => saveSoundToDB(sound));
     }
+  };
+
+  const handleDeleteSound = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent playing sound when clicking delete
+    setCustomSounds(prev => prev.filter(sound => sound.id !== id));
+    removeSoundFromDB(id);
   };
 
   const playSound = async (sound: any) => {
@@ -111,15 +168,24 @@ export default function Soundboard() {
         {customSounds.length > 0 && (
           <div className="buttons-grid custom-buttons-grid">
             {customSounds.map((sound) => (
-              <button
-                key={sound.id}
-                className="sound-button custom-sound-button"
-                onClick={() => playSound(sound)}
-                title={`Play custom sound: ${sound.label}`}
-                aria-label={`Play ${sound.label}`}
-              >
-                {sound.label}
-              </button>
+              <div key={sound.id} className="custom-sound-wrapper">
+                <button
+                  className="sound-button custom-sound-button"
+                  onClick={() => playSound(sound)}
+                  title={`Play custom sound: ${sound.label}`}
+                  aria-label={`Play ${sound.label}`}
+                >
+                  {sound.label}
+                </button>
+                <button
+                  className="delete-sound-button"
+                  onClick={(e) => handleDeleteSound(sound.id, e)}
+                  title="Delete this sound"
+                  aria-label={`Delete ${sound.label}`}
+                >
+                  ✖
+                </button>
+              </div>
             ))}
           </div>
         )}

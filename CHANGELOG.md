@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - IndexedDB Persistence for Custom Sounds
+- Implemented IndexedDB via `PrankDeckDB` to persist custom uploaded files across browser reloads.
+- Added a delete button and styling to custom sounds to manage the stored IndexedDB entries.
+
 ## [1.4.0] - Advanced DSP Filters
 - Added 'Radio' effect to Voice Studio using a BiquadFilterNode chain to simulate small speakers.
 - Added 'Echo' effect to Voice Studio using a DelayNode with a feedback loop.
