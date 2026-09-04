@@ -102,6 +102,27 @@ app.ws('/media-stream', (twilioWs: WebSocket) => {
     // }
 });
 
+// 3. UI Dashboard WebSocket Handler
+app.ws('/ui-stream', (uiWs: WebSocket) => {
+    console.log('UI Dashboard WebSocket Connected.');
+
+    uiWs.on('message', (msg: string) => {
+        try {
+            const data = JSON.parse(msg);
+            if (data.action === 'triggerBlock') {
+                console.log(`[Dashboard Trigger Received]: ${data.label}`);
+                // Future: Pipe corresponding audio to Twilio Media Stream here
+            }
+        } catch (error) {
+            console.error('Failed to parse UI stream message:', error);
+        }
+    });
+
+    uiWs.on('close', () => {
+        console.log('UI Dashboard WebSocket Disconnected.');
+    });
+});
+
 if (require.main === module) {
     app.listen(PORT, () => console.log(`Pipeline Orchestrator running on port ${PORT}`));
 }

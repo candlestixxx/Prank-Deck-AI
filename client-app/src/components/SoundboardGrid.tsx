@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface BlockProps {
     label: string;
@@ -36,11 +36,34 @@ const Section: React.FC<{ title: string; blocks: string[]; onTrigger: (label: st
 
 export const SoundboardGrid: React.FC = () => {
     const [lastTriggered, setLastTriggered] = useState<string | null>(null);
+    const wsRef = useRef<WebSocket | null>(null);
+
+    useEffect(() => {
+        const wsUrl = 'ws://localhost:5050/ui-stream';
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            console.log('Connected to Orchestrator UI Stream');
+        };
+
+        ws.onclose = () => {
+            console.log('Disconnected from Orchestrator UI Stream');
+        };
+
+        wsRef.current = ws;
+
+        return () => {
+            ws.close();
+        };
+    }, []);
 
     const handleTrigger = (label: string) => {
         setLastTriggered(label);
-        // In a real app, this would emit a WebSocket message to the orchestrator
         console.log(`Triggered: ${label}`);
+
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({ action: 'triggerBlock', label }));
+        }
     };
 
     return (
