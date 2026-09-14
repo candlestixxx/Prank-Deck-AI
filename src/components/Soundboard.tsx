@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
+import { useSharedAudio } from '../contexts/SharedAudio';
 import './Soundboard.css';
 
 // These would normally be real audio files, but we'll use a synthesizer for demonstration to avoid needing assets.
@@ -33,7 +34,7 @@ const DB_VERSION = 1;
 const STORE_NAME = 'customSounds';
 
 export default function Soundboard() {
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const { getAudioCtx, getMasterGain, initializeAudio } = useSharedAudio();
   const [customSounds, setCustomSounds] = useState<CustomSound[]>([]);
 
   // Initialize IndexedDB and load existing sounds
@@ -104,13 +105,14 @@ export default function Soundboard() {
   };
 
   const playSound = async (sound: any) => {
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
+    let ctx = getAudioCtx();
+    let masterGain = getMasterGain();
 
-    const ctx = audioCtxRef.current;
-    if (ctx.state === 'suspended') {
-      ctx.resume();
+    if (!ctx || !masterGain) {
+      initializeAudio();
+      ctx = getAudioCtx();
+      masterGain = getMasterGain();
+      if (!ctx || !masterGain) return;
     }
 
     if (sound.type === 'synth') {
@@ -127,7 +129,7 @@ export default function Soundboard() {
       gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
 
       oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
+      gainNode.connect(masterGain); // Route to global master gain
 
       oscillator.start();
       oscillator.stop(ctx.currentTime + 0.5);
@@ -140,7 +142,7 @@ export default function Soundboard() {
 
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(ctx.destination);
+        source.connect(masterGain); // Route custom sounds to master gain
         source.start(0);
       } catch (err) {
         console.error("Error playing custom sound:", err);

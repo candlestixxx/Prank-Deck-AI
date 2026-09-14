@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useSharedAudio } from '../contexts/SharedAudio';
 import './VoiceStudio.css';
 
 export default function VoiceStudio() {
@@ -9,7 +10,7 @@ export default function VoiceStudio() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const { getAudioCtx, getMasterGain, initializeAudio } = useSharedAudio();
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -78,11 +79,16 @@ export default function VoiceStudio() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Setup Web Audio API for visualization during recording
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      let ctx = getAudioCtx();
+      if (!ctx) {
+         initializeAudio();
+         ctx = getAudioCtx();
       }
-      const ctx = audioCtxRef.current;
+
+      if (!ctx) {
+          ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       source.connect(analyser);
@@ -143,10 +149,15 @@ export default function VoiceStudio() {
   const playWithEffect = async () => {
     if (!audioBlobRef.current) return;
 
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    let ctx = getAudioCtx();
+    let masterGain = getMasterGain();
+
+    if (!ctx || !masterGain) {
+      initializeAudio();
+      ctx = getAudioCtx();
+      masterGain = getMasterGain();
+      if (!ctx || !masterGain) return;
     }
-    const ctx = audioCtxRef.current;
 
     // Stop previous playback if any
     if (sourceNodeRef.current) {
@@ -214,10 +225,10 @@ export default function VoiceStudio() {
       source.playbackRate.value = 1.0;
     }
 
-    // Connect to analyser for visualization during playback
+    // Connect to analyser for visualization during playback, then to the master audio routing
     const analyser = ctx.createAnalyser();
     lastNode.connect(analyser);
-    analyser.connect(ctx.destination);
+    analyser.connect(masterGain); // Route to global master gain
     analyserRef.current = analyser;
 
     drawWaveform();

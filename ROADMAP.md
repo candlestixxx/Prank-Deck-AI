@@ -7,4 +7,3 @@
 
 ## Long-term
 - Port the app to a native local app (e.g., Electron or Tauri) to bypass browser media limitations.
-- Build advanced audio routing, but still kept strictly local.

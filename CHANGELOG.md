@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - Global Audio Routing & Master Volume
+- Added `AudioProvider` via React Context to manage a singleton `AudioContext` and `MasterGainNode`.
+- Wired all playback sources (`Soundboard`, custom sounds, `VoiceStudio`) to route through the global master gain.
+- Added a "Master Volume" slider to the main application header.
+
 ## [1.5.0] - IndexedDB Persistence for Custom Sounds
 - Implemented IndexedDB via `PrankDeckDB` to persist custom uploaded files across browser reloads.
 - Added a delete button and styling to custom sounds to manage the stored IndexedDB entries.
