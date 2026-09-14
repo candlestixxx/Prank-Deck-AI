@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.7.0] - 2026-07-27
+
+### Added
+- Implemented a new "Cave" (Echo) audio effect in the Voice Studio utilizing the Web Audio API's `DelayNode` and `GainNode` for a feedback loop.
+
 ## [1.6.0] - 2026-07-27
 
 ### Added

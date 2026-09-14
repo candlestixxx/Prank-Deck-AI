@@ -232,6 +232,22 @@ export default function VoiceStudio() {
       source.connect(lowpass);
       lowpass.connect(highpass);
       highpass.connect(ctx.destination);
+    } else if (effect === 'cave') {
+      // Apply Echo/Delay for Cave effect
+      const delay = ctx.createDelay();
+      delay.delayTime.value = 0.4; // 400ms echo
+
+      const feedback = ctx.createGain();
+      feedback.gain.value = 0.5; // 50% decay per echo
+
+      // Dry signal
+      source.connect(ctx.destination);
+
+      // Wet signal path
+      source.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay); // Loop back for multiple echoes
+      delay.connect(ctx.destination);
     } else {
       source.connect(ctx.destination);
     }
@@ -303,6 +319,14 @@ export default function VoiceStudio() {
                 checked={effect === 'telephone'}
                 onChange={(e) => setEffect(e.target.value)}
               /> Telephone
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="cave"
+                checked={effect === 'cave'}
+                onChange={(e) => setEffect(e.target.value)}
+              /> Cave
             </label>
           </div>
 
