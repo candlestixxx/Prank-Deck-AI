@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - Native Electron Desktop Port
+- Added Electron to run the web application natively, fulfilling the long-term roadmap goal.
+- Included setup scripts (`electron:dev` and `electron:build`) and process management in `package.json`.
+
 ## [1.6.0] - Global Audio Routing & Master Volume
 - Added `AudioProvider` via React Context to manage a singleton `AudioContext` and `MasterGainNode`.
 - Wired all playback sources (`Soundboard`, custom sounds, `VoiceStudio`) to route through the global master gain.
