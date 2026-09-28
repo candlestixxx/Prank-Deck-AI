@@ -12,6 +12,7 @@ export default function VoiceStudio() {
   const audioBlobRef = useRef<Blob | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const extraNodesRef = useRef<AudioNode[]>([]);
 
   // Analyzer refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -202,6 +203,18 @@ export default function VoiceStudio() {
         // Ignore if already stopped
       }
     }
+    // Cleanup any extra nodes from previous effects (like robot oscillators)
+    extraNodesRef.current.forEach(node => {
+      try {
+        if (node instanceof OscillatorNode) {
+          node.stop();
+        }
+        node.disconnect();
+      } catch (e) {
+        // Ignore
+      }
+    });
+    extraNodesRef.current = [];
 
     const arrayBuffer = await audioBlobRef.current.arrayBuffer();
     const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
@@ -248,6 +261,23 @@ export default function VoiceStudio() {
       delay.connect(feedback);
       feedback.connect(delay); // Loop back for multiple echoes
       delay.connect(ctx.destination);
+    } else if (effect === 'robot') {
+      // Apply Ring Modulation for Robot effect
+      const oscillator = ctx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 40; // 40Hz modulation
+
+      const gainNode = ctx.createGain();
+
+      // Connect source to gain
+      source.connect(gainNode);
+      // Connect oscillator to gain's gain AudioParam (Ring Modulation)
+      oscillator.connect(gainNode.gain);
+      // Connect gain out to destination
+      gainNode.connect(ctx.destination);
+
+      oscillator.start(0);
+      extraNodesRef.current.push(oscillator, gainNode);
     } else {
       source.connect(ctx.destination);
     }
@@ -327,6 +357,14 @@ export default function VoiceStudio() {
                 checked={effect === 'cave'}
                 onChange={(e) => setEffect(e.target.value)}
               /> Cave
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="robot"
+                checked={effect === 'robot'}
+                onChange={(e) => setEffect(e.target.value)}
+              /> Robot
             </label>
           </div>
 

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.8.0] - 2026-07-28
+
+### Added
+- Implemented a new "Robot" audio effect in the Voice Studio utilizing Ring Modulation via the Web Audio API (modulating a `GainNode` with a low-frequency `OscillatorNode`).
+
 ## [1.7.0] - 2026-07-27
 
 ### Added
